@@ -203,15 +203,14 @@ int saveWave(char* filename, double outputSignal[], int sampleCount)
 		int bytesPerSample = bits_Per_Sample / 8;
 
 		float maxSample = -1;
-		float MAX_VAL = 32767.f;	
+		float MAX_VAL = 32767.f;
 
-		for (int i = 0; i < sampleCount; i++)
+		maxSample = outputSignal[0];
+		for (int i = 0; i<sampleCount; ++i)
 		{
-			if (i == 0)
-			{
-				maxSample = outputSignal[0];
-			}
-			else if (outputSignal[i] > maxSample)
+		//convolve
+		//Keep track of max value for scaling
+			if (outputSignal[i] > maxSample)
 			{
 				maxSample = outputSignal[i];
 			}
@@ -246,51 +245,51 @@ int loadIR(char* filename)
 
 	if (in != NULL)
 	{
-printf("Reading %s...\n", filename);
+		printf("Reading %s...\n", filename);
 
-//read subchunk1size
-int IRsubChunk1Size;
-fseek(in, 16, SEEK_SET);
-fread(&IRsubChunk1Size, 1, 4, in);
-if (IRsubChunk1Size == 18)
-{
-	short empty;
-	fread(&empty, 1, 2, in);
-}
+		//read subchunk1size
+		int IRsubChunk1Size;
+		fseek(in, 16, SEEK_SET);
+		fread(&IRsubChunk1Size, 1, 4, in);
+		if (IRsubChunk1Size == 18)
+		{
+			short empty;
+			fread(&empty, 1, 2, in);
+		}
 
-//bits per sample
-short bits_Per_SampleIR;
-fseek(in, 34, SEEK_SET);
-fread(&bits_Per_SampleIR, 1, 2, in);
+		//bits per sample
+		short bits_Per_SampleIR;
+		fseek(in, 34, SEEK_SET);
+		fread(&bits_Per_SampleIR, 1, 2, in);
 
-//subchunk2size
-if (IRsubChunk1Size == 18)
-{
-	fseek(in, 42, SEEK_SET);
-	fread(&subChunk2SizeIR, 1, 4, in);
-	fseek(in, 46, SEEK_SET);
-}
-else
-{
-	fseek(in, 40, SEEK_SET);
-	fread(&subChunk2SizeIR, 1, 4, in);
-	fseek(in, 44, SEEK_SET);
-}
+		//subchunk2size
+		if (IRsubChunk1Size == 18)
+		{
+			fseek(in, 42, SEEK_SET);
+			fread(&subChunk2SizeIR, 1, 4, in);
+			fseek(in, 46, SEEK_SET);
+		}
+		else
+		{
+			fseek(in, 40, SEEK_SET);
+			fread(&subChunk2SizeIR, 1, 4, in);
+			fseek(in, 44, SEEK_SET);
+		}
 
-int bytesPerSampleIR = bits_Per_SampleIR / 8;
-number_SamplesIR = subChunk2SizeIR / bytesPerSampleIR;
+		int bytesPerSampleIR = bits_Per_SampleIR / 8;
+		number_SamplesIR = subChunk2SizeIR / bytesPerSampleIR;
 
-dataIR = (short*)malloc(sizeof(short) * number_SamplesIR);
+		dataIR = (short*)malloc(sizeof(short) * number_SamplesIR);
 
-int i = 0;
-short sample = 0;
-while (fread(&sample, 1, bytesPerSampleIR, in) == bytesPerSampleIR)
-{
-	dataIR[i++] = sample;
-	sample = 0;
-}
-// close file input stream
-fclose(in);
+		int i = 0;
+		short sample = 0;
+		while (fread(&sample, 1, bytesPerSampleIR, in) == bytesPerSampleIR)
+		{
+			dataIR[i++] = sample;
+			sample = 0;
+		}
+		// close file input stream
+		fclose(in);
 	}
 	else
 	{
@@ -370,7 +369,7 @@ int main(int argc, char* argv[])
 	double *complexOutput;
 	complexOutput = (double*)malloc(sizeof(double) *doubleMaxSize);
 
-	// complex multiplication of the input and ir response 
+	// complex multiplication of the input and ir response -- optimized to minimize array references
 	int temp;
 	for (int i = 0; i < maxSizePow2; i++)
 	{
