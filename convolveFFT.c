@@ -203,7 +203,7 @@ int saveWave(char* filename, double outputSignal[], int sampleCount)
 		int bytesPerSample = bits_Per_Sample / 8;
 
 		float maxSample = -1;
-		float MAX_VAL = 32767.f;
+		float MAX_VAL = 32767.f;	
 
 		for (int i = 0; i < sampleCount; i++)
 		{
@@ -371,11 +371,12 @@ int main(int argc, char* argv[])
 	complexOutput = (double*)malloc(sizeof(double) *doubleMaxSize);
 
 	// complex multiplication of the input and ir response 
-	//int temp;
+	int temp;
 	for (int i = 0; i < maxSizePow2; i++)
 	{
-		complexOutput[i * 2] = complexInput[i] * complexIR[i] - complexInput[i + 1] * complexIR[i + 1];
-		complexOutput[i * 2 + 1] = complexInput[i + 1] * complexIR[i] + complexInput[i] * complexIR[i + 1];
+		temp = i + i;
+		complexOutput[temp] = complexInput[i] * complexIR[i] - complexInput[i + 1] * complexIR[i + 1];
+		complexOutput[temp + 1] = complexInput[i + 1] * complexIR[i] + complexInput[i] * complexIR[i + 1];
 	}
 
 	char* outputFile = argv[3];
