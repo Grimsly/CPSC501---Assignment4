@@ -219,6 +219,7 @@ int saveWave(char* filename, double outputSignal[], int sampleCount)
 			}
 		}
 
+
 		//scale and re write the data
 		for (int i = 0; i<sampleCount; ++i)
 		{
@@ -345,10 +346,6 @@ int main(int argc, char* argv[])
 	for (int i = 0; i < doubleMaxSize; i++)
 	{
 		complexIR[i] = 0.0;
-	}
-
-	for (int i = 0; i < doubleMaxSize; i++)
-	{
 		complexInput[i] = 0.0;
 	}
 
@@ -378,13 +375,8 @@ int main(int argc, char* argv[])
 	for (int i = 0; i < maxSizePow2; i++)
 	{
 		complexOutput[i * 2] = complexInput[i] * complexIR[i] - complexInput[i + 1] * complexIR[i + 1];
-	}
-
-	for (int i = 0; i < maxSizePow2; i++)
-	{
 		complexOutput[i * 2 + 1] = complexInput[i + 1] * complexIR[i] + complexInput[i] * complexIR[i + 1];
 	}
-
 
 	char* outputFile = argv[3];
 
