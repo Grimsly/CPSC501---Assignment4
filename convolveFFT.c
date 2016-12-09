@@ -143,8 +143,6 @@ int loadWave(char* filename)
 		number_Samples = subChunk2Size / bytesPerSample;
 		data = (short*)malloc(sizeof(short) * number_Samples);
 
-		//fread(data, 1, bytesPerSample*numSamples, in);
-
 		int i = 0;
 		short sample = 0;
 		// read the .wav file data into data array
@@ -205,7 +203,7 @@ int saveWave(char* filename, double outputSignal[], int sampleCount)
 		int bytesPerSample = bits_Per_Sample / 8;
 
 		float maxSample = -1;
-		float MAX_VAL = 32767.f;	
+		float MAX_VAL = 32767.f;
 
 		for (int i = 0; i < sampleCount; i++)
 		{
@@ -218,7 +216,6 @@ int saveWave(char* filename, double outputSignal[], int sampleCount)
 				maxSample = outputSignal[i];
 			}
 		}
-
 
 		//scale and re write the data
 		for (int i = 0; i<sampleCount; ++i)
@@ -343,10 +340,12 @@ int main(int argc, char* argv[])
 
 
 	// pad the array with 0's
-	for (int i = 0; i < doubleMaxSize; i++)
+	for (int i = 0; i < doubleMaxSize - 1; i += 2)
 	{
-		complexIR[i] = 0.0;
 		complexInput[i] = 0.0;
+		complexInput[i + 1] = 0.0;
+		complexIR[i] = 0.0;
+		complexIR[i + 1] = 0.0;
 	}
 
 	double MAX_VAL = 32767.f;
@@ -372,6 +371,7 @@ int main(int argc, char* argv[])
 	complexOutput = (double*)malloc(sizeof(double) *doubleMaxSize);
 
 	// complex multiplication of the input and ir response 
+	//int temp;
 	for (int i = 0; i < maxSizePow2; i++)
 	{
 		complexOutput[i * 2] = complexInput[i] * complexIR[i] - complexInput[i + 1] * complexIR[i + 1];
