@@ -374,8 +374,12 @@ int main(int argc, char* argv[])
 	for (int i = 0; i < maxSizePow2; i++)
 	{
 		temp = i + i;
-		complexOutput[temp] = complexInput[i] * complexIR[i] - complexInput[i + 1] * complexIR[i + 1];
-		complexOutput[temp + 1] = complexInput[i + 1] * complexIR[i] + complexInput[i] * complexIR[i + 1];
+		double input1 = complexInput[i];
+		double input2 = complexInput[i + 1];
+		double IR1 = complexIR[i];
+		double IR2 = complexIR[i + 1];
+		complexOutput[temp] = input1 * IR1 - input2 * IR2;
+		complexOutput[temp + 1] = input2 * IR1 + input1 * IR2;
 	}
 
 	char* outputFile = argv[3];
